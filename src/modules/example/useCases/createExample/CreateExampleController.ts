@@ -8,7 +8,7 @@ import { CreateExampleUseCase } from "./CreateExampleUseCase";
 
 class CreateExampleController {
   async handle(req: Request, res: Response): Promise<Response> {
-    const { name, email } = await createExampleSchema.validateSync(
+    const { name, email } = createExampleSchema.validateSync(
       req.body,
       validateOptions
     );
