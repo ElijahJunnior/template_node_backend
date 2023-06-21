@@ -1,7 +1,7 @@
 import { AppError } from "@shared/errors/AppError";
 
 export namespace FindExampleByIdError {
-  export class ExempleNotExists extends AppError {
+  export class ExampleNotExists extends AppError {
     constructor() {
       super("O exemplo informado não existe!", 400);
     }

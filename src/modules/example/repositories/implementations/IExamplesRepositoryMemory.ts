@@ -52,4 +52,14 @@ export class IExamplesRepositoryMemory implements IExamplesRepository {
   async findAll(): Promise<Example[]> {
     return this.examples;
   }
+
+  async updateActivation(id: string, activation: boolean): Promise<void> {
+    const example_index = this.examples.findIndex(
+      (example) => example.id === id
+    );
+
+    const example = this.examples[example_index];
+
+    example.active = activation;
+  }
 }

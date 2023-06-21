@@ -1,14 +1,21 @@
 import { instanceToInstance } from "class-transformer";
 
-import { IExempleDTO } from "../dtos/IExampleDTO";
+import { IExampleDTO } from "../dtos/IExampleDTO";
 import { Example } from "../entities/Example";
 
 class ExampleMap {
-  static toExampleDTO({ id, name, email, created_at }: Example): IExempleDTO {
+  static toExampleDTO({
+    id,
+    name,
+    email,
+    active,
+    created_at,
+  }: Example): IExampleDTO {
     const example = instanceToInstance({
       id,
       name,
       email,
+      active,
       created_at,
     });
 

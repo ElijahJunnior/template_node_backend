@@ -1,7 +1,7 @@
 import { inject, injectable } from "tsyringe";
 
 import { IExampleCreateDTO } from "@modules/example/dtos/IExampleCreateDTO";
-import { IExempleDTO } from "@modules/example/dtos/IExampleDTO";
+import { IExampleDTO } from "@modules/example/dtos/IExampleDTO";
 import { ExampleMap } from "@modules/example/mappers/ExampleMap";
 import { IExamplesRepository } from "@modules/example/repositories/IExamplesRepository";
 
@@ -14,7 +14,7 @@ export class CreateExampleUseCase {
     private readonly examplesRepository: IExamplesRepository
   ) {}
 
-  async execute({ name, email }: IExampleCreateDTO): Promise<IExempleDTO> {
+  async execute({ name, email }: IExampleCreateDTO): Promise<IExampleDTO> {
     const name_exists = await this.examplesRepository.findByName(name);
 
     if (name_exists !== undefined) {

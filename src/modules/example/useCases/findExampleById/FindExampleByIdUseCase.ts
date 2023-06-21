@@ -1,6 +1,6 @@
 import { inject, injectable } from "tsyringe";
 
-import { IExempleDTO } from "@modules/example/dtos/IExampleDTO";
+import { IExampleDTO } from "@modules/example/dtos/IExampleDTO";
 import { ExampleMap } from "@modules/example/mappers/ExampleMap";
 import { IExamplesRepository } from "@modules/example/repositories/IExamplesRepository";
 
@@ -13,11 +13,11 @@ export class FindExampleByIdUseCase {
     private readonly examplesRepository: IExamplesRepository
   ) {}
 
-  async execute(id: string): Promise<IExempleDTO> {
+  async execute(id: string): Promise<IExampleDTO> {
     const example = await this.examplesRepository.findById(id);
 
     if (example === undefined) {
-      throw new FindExampleByIdError.ExempleNotExists();
+      throw new FindExampleByIdError.ExampleNotExists();
     }
 
     const mappedExample = ExampleMap.toExampleDTO(example);
