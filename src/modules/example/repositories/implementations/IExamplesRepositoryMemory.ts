@@ -62,4 +62,15 @@ export class IExamplesRepositoryMemory implements IExamplesRepository {
 
     example.active = activation;
   }
+
+  async update(id: string, new_name: string, new_email: string): Promise<void> {
+    const example_index = this.examples.findIndex(
+      (example) => example.id === id
+    );
+
+    const example = this.examples[example_index];
+
+    example.name = new_name;
+    example.email = new_email;
+  }
 }

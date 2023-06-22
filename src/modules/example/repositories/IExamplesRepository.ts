@@ -9,4 +9,5 @@ export interface IExamplesRepository {
   findByEmail(email: string): Promise<Example | undefined>;
   findAll(): Promise<Example[]>;
   updateActivation(id: string, activation: boolean): Promise<void>;
+  update(id: string, new_name: string, new_email: string): Promise<void>;
 }
