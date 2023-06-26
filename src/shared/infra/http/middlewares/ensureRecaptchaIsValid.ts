@@ -9,10 +9,6 @@ async function ensureRecaptchaIsValid(
   nxt: NextFunction
 ): Promise<void> {
   try {
-    if (process.env.DEV_MODE === "S") {
-      return nxt();
-    }
-
     const recaptcha_secret_key = process.env.RE_CAPTCHA_SECRET_KEY as string;
 
     let recaptcha = req.body?.recaptcha_token as string | undefined;
@@ -25,6 +21,10 @@ async function ensureRecaptchaIsValid(
       } else {
         throw new AppError("A resposta do Google ReCAPTCHA não foi informada.");
       }
+    }
+
+    if (process.env.DEV_MODE === "S") {
+      return nxt();
     }
 
     const VERIFY_URL = `https://www.google.com/recaptcha/api/siteverify?secret=${recaptcha_secret_key}&response=${recaptcha}`;
