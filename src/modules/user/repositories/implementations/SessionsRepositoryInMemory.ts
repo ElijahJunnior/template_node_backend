@@ -6,6 +6,14 @@ import { ISessionsRepository } from "../ISessionsRepository";
 export class SessionsRepositoryInMemory implements ISessionsRepository {
   private readonly sessions: Session[];
 
+  private cloneSession(session: Session): Session {
+    const new_session = {
+      ...session,
+    };
+
+    return new_session;
+  }
+
   constructor() {
     if (this.sessions == null) {
       this.sessions = [];
@@ -22,7 +30,7 @@ export class SessionsRepositoryInMemory implements ISessionsRepository {
 
     this.sessions.push(session);
 
-    return session;
+    return this.cloneSession(session);
   }
 
   async findByUser(user_id: string): Promise<Session[]> {
@@ -33,7 +41,7 @@ export class SessionsRepositoryInMemory implements ISessionsRepository {
     if (user_sessions == null) {
       return [];
     } else {
-      return user_sessions;
+      return user_sessions.map((session) => this.cloneSession(session));
     }
   }
 
@@ -46,7 +54,7 @@ export class SessionsRepositoryInMemory implements ISessionsRepository {
         session.user_id === user_id && session.refresh_token === refresh_token
     );
 
-    return session;
+    return session != null ? this.cloneSession(session) : undefined;
   }
 
   async updateToken(id: string, new_refresh_token: string): Promise<void> {

@@ -1,3 +1,5 @@
+import { compare } from "bcryptjs";
+import { sign } from "jsonwebtoken";
 import { inject } from "tsyringe";
 
 import { ISessionsRepository } from "@modules/user/repositories/ISessionsRepository";
@@ -22,7 +24,35 @@ export class CreateUserSessionUseCase {
     const user = await this.usersRepository.findByEmail(email);
 
     if (user === undefined) {
-      return new CreateUserSessionError.InvalidAuthenticationData();
+      throw new CreateUserSessionError.InvalidAuthenticationData();
     }
+
+    const is_valid_password = await compare(password, user.password);
+
+    if (!is_valid_password) {
+      throw new CreateUserSessionError.InvalidAuthenticationData();
+    }
+
+    const token_secret = process.env.JWT_TOKEN_SECRET as string;
+
+    const token = sign({}, token_secret, {
+      subject: user.id,
+      expiresIn: process.env.JWT_TOKEN_EXPIRES_IN,
+    });
+
+    const refresh_token_secret = process.env.JWT_REFRESH_TOKEN_SECRET as string;
+
+    const refresh_token = sign({}, refresh_token_secret, {
+      subject: user.id,
+      expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRES_IN,
+    });
+
+    const sessions_limit = (process.env.ACTIVE_SESSIONS_LIMIT ?? 20) as number;
+
+    const sessions = await this.sessionsRepository.findByUser(user.id);
+
+    // if (sessions.length < sessions_limit) {
+    //   sessions.sort((a, b) => b.updated_at.to  )
+    // }
   }
 }
