@@ -51,8 +51,12 @@ export class CreateUserSessionUseCase {
 
     const sessions = await this.sessionsRepository.findByUser(user.id);
 
-    // if (sessions.length < sessions_limit) {
-    //   sessions.sort((a, b) => b.updated_at.to  )
-    // }
+    if (sessions.length < sessions_limit) {
+      sessions.sort((a, b) => (a.updated_at < b.updated_at ? 1 : -1));
+
+      const last_session = sessions[sessions.length - 1];
+
+      await this.sessionsRepository.delete(last_session.id);
+    }
   }
 }
