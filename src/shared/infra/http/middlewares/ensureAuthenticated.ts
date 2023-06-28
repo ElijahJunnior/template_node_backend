@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { TokenExpiredError, verify } from "jsonwebtoken";
+import { container } from "tsyringe";
 
+import { IUsersRepository } from "@modules/user/repositories/IUsersRepository";
 import { AppError } from "@shared/errors/AppError";
 
 interface IPayload {
@@ -26,7 +28,12 @@ async function ensureAuthenticated(
       process.env.JWT_TOKEN_SECRET as string
     ) as IPayload;
 
-    // elias_fazer
+    const usersRepository: IUsersRepository =
+      container.resolve("UsersRepository");
+
+    const user = await usersRepository.findById(user_id);
+
+    console.log(user);
 
     nxt();
   } catch (err) {
