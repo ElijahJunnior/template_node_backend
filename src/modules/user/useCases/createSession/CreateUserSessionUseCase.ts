@@ -1,7 +1,9 @@
 import { compare } from "bcryptjs";
 import { sign } from "jsonwebtoken";
-import { inject } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 
+import { ISessionDTO } from "@modules/user/dtos/ISessionDTO";
+import { SessionMap } from "@modules/user/mappers/SessionMap";
 import { ISessionsRepository } from "@modules/user/repositories/ISessionsRepository";
 import { IUsersRepository } from "@modules/user/repositories/IUsersRepository";
 
@@ -12,6 +14,7 @@ interface ICreateSessionProps {
   password: string;
 }
 
+@injectable()
 export class CreateUserSessionUseCase {
   constructor(
     @inject("UsersRepository")
@@ -20,7 +23,10 @@ export class CreateUserSessionUseCase {
     private readonly sessionsRepository: ISessionsRepository
   ) {}
 
-  async execute({ email, password }: ICreateSessionProps) {
+  async execute({
+    email,
+    password,
+  }: ICreateSessionProps): Promise<ISessionDTO> {
     const user = await this.usersRepository.findByEmail(email);
 
     if (user === undefined) {
@@ -51,12 +57,25 @@ export class CreateUserSessionUseCase {
 
     const sessions = await this.sessionsRepository.findByUser(user.id);
 
-    if (sessions.length < sessions_limit) {
+    if (sessions.length >= sessions_limit) {
       sessions.sort((a, b) => (a.updated_at < b.updated_at ? 1 : -1));
 
       const last_session = sessions[sessions.length - 1];
 
       await this.sessionsRepository.delete(last_session.id);
     }
+
+    await this.sessionsRepository.create({
+      user_id: user.id,
+      refresh_token,
+    });
+
+    const session = SessionMap.toSessionDTO({
+      refresh_token,
+      token,
+      user,
+    });
+
+    return session;
   }
 }
