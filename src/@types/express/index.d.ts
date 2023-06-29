@@ -4,6 +4,9 @@ declare namespace Express {
     user: {
       id: string;
       email: string;
+      name: string;
+      verified: boolean;
+      created_at: Date;
     };
   }
 }

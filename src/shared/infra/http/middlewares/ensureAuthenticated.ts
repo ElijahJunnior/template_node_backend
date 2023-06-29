@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { TokenExpiredError, verify } from "jsonwebtoken";
 import { container } from "tsyringe";
 
+import { UserMap } from "@modules/user/mappers/UserMap";
 import { IUsersRepository } from "@modules/user/repositories/IUsersRepository";
 import { AppError } from "@shared/errors/AppError";
 
@@ -33,7 +34,11 @@ async function ensureAuthenticated(
 
     const user = await usersRepository.findById(user_id);
 
-    console.log(user);
+    if (user == null) {
+      throw new AppError("Usuário não encontrado", 401);
+    }
+
+    req.user = UserMap.toUserDTO(user);
 
     nxt();
   } catch (err) {

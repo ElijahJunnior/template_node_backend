@@ -7,10 +7,11 @@ import { FindExampleByIdController } from "@modules/example/useCases/findExample
 import { UpdateExampleController } from "@modules/example/useCases/updateExample/UpdateExampleController";
 import { UpdateExampleActivationController } from "@modules/example/useCases/updateExampleActivation/UpdateExampleActivationController";
 
+import { ensureAuthenticated } from "../middlewares/ensureAuthenticated";
+import { ensureRecaptchaIsValid } from "../middlewares/ensureRecaptchaIsValid";
+
 // elias_fazer
-// import { ensureAuthenticated } from "../middlewares/ensureAuthenticated";
 // import { ensureIsAdmin } from "../middlewares/ensureHavePermission";
-// import { ensureRecaptchaIsValid } from "../middlewares/ensureRecaptchaIsValid";
 
 const examplesRoutes = Router();
 
@@ -18,9 +19,8 @@ const examplesRoutes = Router();
 const create_example = new CreateExampleController();
 examplesRoutes.post(
   "/",
-  // ensureAuthenticated,
-  // ensureIsAdmin,
-  // ensureRecaptchaIsValid,
+  ensureAuthenticated,
+  ensureRecaptchaIsValid,
   create_example.handle
 );
 
@@ -35,9 +35,9 @@ examplesRoutes.get("/:id", find_example_by_id.handle);
 const update_example_activation = new UpdateExampleActivationController();
 examplesRoutes.patch(
   "/:id/activation",
-  // ensureAuthenticated,
+  ensureAuthenticated,
   // ensureIsAdmin,
-  // ensureRecaptchaIsValid,
+  ensureRecaptchaIsValid,
   update_example_activation.handle
 );
 
@@ -45,9 +45,8 @@ examplesRoutes.patch(
 const update_example = new UpdateExampleController();
 examplesRoutes.put(
   "/:id",
-  // ensureAuthenticated,
-  // ensureIsAdmin,
-  // ensureRecaptchaIsValid,
+  ensureAuthenticated,
+  ensureRecaptchaIsValid,
   update_example.handle
 );
 
@@ -55,9 +54,8 @@ examplesRoutes.put(
 const delete_example = new DeleteExampleController();
 examplesRoutes.delete(
   "/:id",
-  // ensureAuthenticated,
-  // ensureIsAdmin,
-  // ensureRecaptchaIsValid,
+  ensureAuthenticated,
+  ensureRecaptchaIsValid,
   delete_example.handle
 );
 
