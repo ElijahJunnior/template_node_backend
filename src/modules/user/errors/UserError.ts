@@ -6,4 +6,10 @@ export namespace UserError {
       super("O e-mail informado já está em uso!");
     }
   }
+
+  export class UserNotFound extends AppError {
+    constructor() {
+      super("O usuário informado não existe!");
+    }
+  }
 }
