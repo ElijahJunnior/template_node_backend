@@ -74,4 +74,14 @@ export class SessionsRepositoryInMemory implements ISessionsRepository {
       this.sessions.splice(session_index, 1);
     }
   }
+
+  async deleteByUser(user_id: string): Promise<void> {
+    const sessions = this.sessions.filter(
+      (session) => session.user_id === user_id
+    );
+
+    for (const session of sessions) {
+      await this.delete(session.id);
+    }
+  }
 }

@@ -7,4 +7,5 @@ export interface ISessionsRepository {
   findByUserToken(data: ISessionKeyDTO): Promise<Session | undefined>;
   updateToken(id: string, new_refresh_token: string): Promise<void>;
   delete(id: string): Promise<void>;
+  deleteByUser(user_id: string): Promise<void>;
 }
