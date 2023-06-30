@@ -43,4 +43,12 @@ export class UsersRepositoryInMemory implements IUsersRepository {
 
     return user !== undefined ? this.cloneUser(user) : undefined;
   }
+
+  async update(new_data: User): Promise<void> {
+    const user = this.users.find((user) => user.id === new_data.id);
+
+    if (user != null) {
+      user.name = new_data.name;
+    }
+  }
 }

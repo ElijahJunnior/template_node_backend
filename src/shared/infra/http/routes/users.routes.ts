@@ -5,6 +5,7 @@ import { CreateUserSessionController } from "@modules/user/useCases/createSessio
 import { CreateUserController } from "@modules/user/useCases/createUser/CreateUserController";
 import { GetUserProfileByIdController } from "@modules/user/useCases/getUserProfileById/GetUserProfileByIdController";
 import { GetUserProfileByTokenController } from "@modules/user/useCases/getUserProfileByToken/GetUserProfileByTokenController";
+import { UpdateUserController } from "@modules/user/useCases/updateUser/UpdateUserController";
 
 import { ensureAuthenticated } from "../middlewares/ensureAuthenticated";
 
@@ -23,5 +24,14 @@ usersRoutes.get("/:user_id", get_user_by_id.handle);
 
 const get_user_by_token = new GetUserProfileByTokenController();
 usersRoutes.get("/", ensureAuthenticated, get_user_by_token.handle);
+
+// PUT
+const update_user = new UpdateUserController();
+usersRoutes.put(
+  "/",
+  ensureRecaptchaIsValid,
+  ensureAuthenticated,
+  update_user.handle
+);
 
 export { usersRoutes };
