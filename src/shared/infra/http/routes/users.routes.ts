@@ -1,8 +1,8 @@
 import { Router } from "express";
 
 import { ensureRecaptchaIsValid } from "@middlewares/ensureRecaptchaIsValid";
-import { CreateUserSessionController } from "@modules/user/useCases/createSession/CreateUserSessionController";
 import { CreateUserController } from "@modules/user/useCases/createUser/CreateUserController";
+import { CreateUserSessionController } from "@modules/user/useCases/createUserSession/CreateUserSessionController";
 import { GetUserProfileByIdController } from "@modules/user/useCases/getUserProfileById/GetUserProfileByIdController";
 import { GetUserProfileByTokenController } from "@modules/user/useCases/getUserProfileByToken/GetUserProfileByTokenController";
 import { UpdateUserController } from "@modules/user/useCases/updateUser/UpdateUserController";
