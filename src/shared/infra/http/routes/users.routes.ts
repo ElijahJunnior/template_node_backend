@@ -6,6 +6,7 @@ import { CreateUserController } from "@modules/user/useCases/createUser/CreateUs
 import { GetUserProfileByIdController } from "@modules/user/useCases/getUserProfileById/GetUserProfileByIdController";
 import { GetUserProfileByTokenController } from "@modules/user/useCases/getUserProfileByToken/GetUserProfileByTokenController";
 import { UpdateUserController } from "@modules/user/useCases/updateUser/UpdateUserController";
+import { UpdateUserPasswordController } from "@modules/user/useCases/updateUserPassword/UpdateUserPasswordController";
 
 import { ensureAuthenticated } from "../middlewares/ensureAuthenticated";
 
@@ -32,6 +33,15 @@ usersRoutes.put(
   ensureRecaptchaIsValid,
   ensureAuthenticated,
   update_user.handle
+);
+
+// PATCH
+const update_user_password = new UpdateUserPasswordController();
+usersRoutes.patch(
+  "/password",
+  ensureRecaptchaIsValid,
+  ensureAuthenticated,
+  update_user_password.handle
 );
 
 export { usersRoutes };

@@ -1,5 +1,5 @@
 import { compare, hash } from "bcryptjs";
-import { inject } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 
 import { UserError } from "@modules/user/errors/UserError";
 import { ISessionsRepository } from "@modules/user/repositories/ISessionsRepository";
@@ -12,7 +12,7 @@ interface IUpdatePasswordProps {
   old_password: string;
   new_password: string;
 }
-
+@injectable()
 export class UpdateUserPasswordUseCase {
   constructor(
     @inject("UsersRepository")
