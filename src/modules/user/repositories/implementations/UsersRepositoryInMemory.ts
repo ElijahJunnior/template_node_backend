@@ -1,4 +1,5 @@
 import { IUserCreateDTO } from "@modules/user/dtos/IUserCreateDTO";
+import { IUserUpdateDTO } from "@modules/user/dtos/IUserUpdateDTO";
 import { User } from "@modules/user/entities/User";
 
 import { IUsersRepository } from "../IUsersRepository";
@@ -44,11 +45,19 @@ export class UsersRepositoryInMemory implements IUsersRepository {
     return user !== undefined ? this.cloneUser(user) : undefined;
   }
 
-  async update(new_data: User): Promise<void> {
-    const user = this.users.find((user) => user.id === new_data.id);
+  async update(data: IUserUpdateDTO): Promise<void> {
+    const user = this.users.find((user) => user.id === data.user_id);
 
     if (user != null) {
-      user.name = new_data.name;
+      user.name = data.name;
+    }
+  }
+
+  async updatePassword(user_id: string, new_password: string): Promise<void> {
+    const user = this.users.find((user) => user.id === user_id);
+
+    if (user != null) {
+      user.password = new_password;
     }
   }
 }

@@ -14,11 +14,11 @@ export class UpdateUserController {
 
     const use_case = container.resolve(UpdateUserUseCase);
 
-    const user = await use_case.handle({
-      name,
+    await use_case.handle({
       user_id,
+      name,
     });
 
-    return res.json(user);
+    return res.send();
   }
 }
