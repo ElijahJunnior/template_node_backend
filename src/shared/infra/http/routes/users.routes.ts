@@ -5,6 +5,7 @@ import { CreateUserController } from "@modules/user/useCases/createUser/CreateUs
 import { CreateUserSessionController } from "@modules/user/useCases/createUserSession/CreateUserSessionController";
 import { GetUserProfileByIdController } from "@modules/user/useCases/getUserProfileById/GetUserProfileByIdController";
 import { GetUserProfileByTokenController } from "@modules/user/useCases/getUserProfileByToken/GetUserProfileByTokenController";
+import { RefreshUserTokenController } from "@modules/user/useCases/refreshUserToken/RefreshUserTokenController";
 import { UpdateUserController } from "@modules/user/useCases/updateUser/UpdateUserController";
 import { UpdateUserPasswordController } from "@modules/user/useCases/updateUserPassword/UpdateUserPasswordController";
 
@@ -18,6 +19,9 @@ usersRoutes.post("/", ensureRecaptchaIsValid, create_user.handle);
 
 const create_session = new CreateUserSessionController();
 usersRoutes.post("/sessions", ensureRecaptchaIsValid, create_session.handle);
+
+const refresh_token = new RefreshUserTokenController();
+usersRoutes.post("/sessions/refresh-token", refresh_token.handle);
 
 // GET
 const get_user_by_id = new GetUserProfileByIdController();

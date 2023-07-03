@@ -1,10 +1,13 @@
-import { decode } from "jsonwebtoken";
+import { decode, sign, TokenExpiredError, verify } from "jsonwebtoken";
 import { inject, injectable } from "tsyringe";
 
 import { ISessionDTO } from "@modules/user/dtos/ISessionDTO";
 import { UserError } from "@modules/user/errors/UserError";
+import { SessionMap } from "@modules/user/mappers/SessionMap";
 import { ISessionsRepository } from "@modules/user/repositories/ISessionsRepository";
 import { IUsersRepository } from "@modules/user/repositories/IUsersRepository";
+
+import { RefreshUserTokenErro } from "./RefreshUserTokenErro";
 
 interface IPayload {
   sub: string;
@@ -25,8 +28,52 @@ export class RefreshUserTokenUseCase {
     const user = await this.usersRepository.findById(user_id);
 
     if (user === undefined) {
-      throw new UserError.UserEmailAlreadyExists();
+      throw new UserError.UserNotFound();
     }
-    throw new Error("Not implemented");
+
+    const session = await this.sessionsRepository.findByUserToken({
+      refresh_token,
+      user_id,
+    });
+
+    if (session == null) {
+      throw new RefreshUserTokenErro.InvalidRefreshToken();
+    }
+
+    try {
+      verify(refresh_token, process.env.JWT_REFRESH_TOKEN_SECRET as string);
+    } catch (err) {
+      await this.sessionsRepository.delete(session.id);
+
+      if (err instanceof TokenExpiredError) {
+        throw new RefreshUserTokenErro.ExpiredRefreshToken();
+      }
+
+      throw new RefreshUserTokenErro.InvalidRefreshToken();
+    }
+
+    const token_secret = process.env.JWT_TOKEN_SECRET as string;
+
+    const new_token = sign({}, token_secret, {
+      subject: user.id,
+      expiresIn: process.env.JWT_TOKEN_EXPIRES_IN,
+    });
+
+    const refresh_token_secret = process.env.JWT_REFRESH_TOKEN_SECRET as string;
+
+    const new_refresh_token = sign({}, refresh_token_secret, {
+      subject: user.id,
+      expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRES_IN,
+    });
+
+    await this.sessionsRepository.updateToken(session.id, new_refresh_token);
+
+    const new_session = SessionMap.toSessionDTO({
+      refresh_token: new_refresh_token,
+      token: new_token,
+      user,
+    });
+
+    return new_session;
   }
 }

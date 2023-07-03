@@ -62,6 +62,7 @@ export class SessionsRepositoryInMemory implements ISessionsRepository {
 
     if (session != null) {
       session.refresh_token = new_refresh_token;
+      session.updated_at = new Date();
     }
   }
 
