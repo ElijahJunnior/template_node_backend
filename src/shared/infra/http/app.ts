@@ -5,8 +5,8 @@ import "@shared/container";
 
 import cors from "cors";
 import express from "express";
+import { resolve } from "path";
 
-import upload from "@config/multerImageUpload";
 import { errorHandleMiddleware } from "@middlewares/errorHandleMiddleware";
 
 import { router } from "./routes";
@@ -17,7 +17,11 @@ app.use(express.json());
 
 app.use(cors());
 
-router.use("/images/", express.static(`${upload.tmp_folder}/images`));
+const public_path = resolve(__dirname, "..", "..", "..", "..", "public");
+
+console.log(public_path);
+
+router.use("/images/", express.static(`${public_path}/images`));
 
 app.use(router);
 
