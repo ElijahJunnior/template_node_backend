@@ -1,10 +1,9 @@
 import { inject, injectable } from "tsyringe";
 
 import { IExampleDTO } from "@modules/example/dtos/IExampleDTO";
+import { ExampleErro } from "@modules/example/errors/ExampleErro";
 import { ExampleMap } from "@modules/example/mappers/ExampleMap";
 import { IExamplesRepository } from "@modules/example/repositories/IExamplesRepository";
-
-import { UpdateExampleActivationError } from "./UpdateExampleActivationError";
 
 @injectable()
 export class UpdateExampleActivationUseCase {
@@ -17,7 +16,7 @@ export class UpdateExampleActivationUseCase {
     const example = await this.examplesRepository.findById(id);
 
     if (example === undefined) {
-      throw new UpdateExampleActivationError.ExampleNotExists();
+      throw new ExampleErro.ExampleNotExists();
     }
 
     const activation = !example.active;

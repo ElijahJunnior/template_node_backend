@@ -1,8 +1,7 @@
 import { inject, injectable } from "tsyringe";
 
+import { ExampleErro } from "@modules/example/errors/ExampleErro";
 import { IExamplesRepository } from "@modules/example/repositories/IExamplesRepository";
-
-import { DeleteExampleError } from "./DeleteExampleError";
 
 @injectable()
 export class DeleteExampleUseCase {
@@ -15,7 +14,7 @@ export class DeleteExampleUseCase {
     const example = await this.examplesRepository.findById(id);
 
     if (example === undefined) {
-      throw new DeleteExampleError.ExampleNotExists();
+      throw new ExampleErro.ExampleNotExists();
     }
 
     await this.examplesRepository.delete(id);
