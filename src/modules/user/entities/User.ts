@@ -8,6 +8,9 @@ export class User {
   verified: boolean;
   created_at: Date;
 
+  verification_token: string;
+  forgot_password_token: string;
+
   constructor() {
     if (this.id == null) {
       this.id = uuid();
