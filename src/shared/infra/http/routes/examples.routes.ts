@@ -4,6 +4,7 @@ import { CreateExampleController } from "@modules/example/useCases/createExample
 import { DeleteExampleController } from "@modules/example/useCases/deleteExample/DeleteExampleController";
 import { FindAllExamplesController } from "@modules/example/useCases/findAllExamples/FindAllExamplesController";
 import { FindExampleByIdController } from "@modules/example/useCases/findExampleById/FindExampleByIdController";
+import { SendNotificationByMailController } from "@modules/example/useCases/sendNotificationByMail/SendNotificationByMailController";
 import { UpdateExampleController } from "@modules/example/useCases/updateExample/UpdateExampleController";
 import { UpdateExampleActivationController } from "@modules/example/useCases/updateExampleActivation/UpdateExampleActivationController";
 
@@ -22,6 +23,13 @@ examplesRoutes.post(
   ensureAuthenticated,
   ensureRecaptchaIsValid,
   create_example.handle
+);
+
+const send_notification_by_mail = new SendNotificationByMailController();
+examplesRoutes.post(
+  "/send-notification-mail/:id",
+  ensureRecaptchaIsValid,
+  send_notification_by_mail.handle
 );
 
 // GET

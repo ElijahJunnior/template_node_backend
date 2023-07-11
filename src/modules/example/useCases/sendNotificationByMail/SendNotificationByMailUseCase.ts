@@ -5,8 +5,15 @@ import { ExampleErro } from "@modules/example/errors/ExampleErro";
 import { IExamplesRepository } from "@modules/example/repositories/IExamplesRepository";
 import { IMailProvider } from "@shared/providers/MailProvider/IMailProvider";
 
+import { SendNotificationByMailErro } from "./SendNotificationByMailErro";
+
 interface IExampleMailVariables {
   user_name: string;
+}
+
+interface ISendNotificationProps {
+  id: string;
+  recipients_email: string;
 }
 
 @injectable()
@@ -18,8 +25,11 @@ export class SendNotificationByMailUseCase {
     private readonly mailProvider: IMailProvider
   ) {}
 
-  async execute(email: string): Promise<void> {
-    const example = await this.examplesRepository.findByEmail(email);
+  async execute({
+    id,
+    recipients_email,
+  }: ISendNotificationProps): Promise<void> {
+    const example = await this.examplesRepository.findById(id);
 
     if (example == null) {
       throw new ExampleErro.ExampleNotExists();
@@ -36,13 +46,14 @@ export class SendNotificationByMailUseCase {
 
     try {
       await this.mailProvider.sendMail(
-        example.email,
+        recipients_email,
         "Notificação de exemplo",
         view_path,
         variables
       );
-    } catch {
-      // verificar como tratar o erro
+    } catch (err) {
+      console.log(JSON.stringify(err, null, 2));
+      throw new SendNotificationByMailErro.ErroToSendMail();
     }
   }
 }
