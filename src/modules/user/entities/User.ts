@@ -8,8 +8,8 @@ export class User {
   verified: boolean;
   created_at: Date;
 
-  verification_token: string;
-  forgot_password_token: string;
+  verification_key: string;
+  forgot_password_key: string;
 
   constructor() {
     if (this.id == null) {

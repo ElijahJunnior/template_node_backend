@@ -6,6 +6,7 @@ import { CreateUserSessionController } from "@modules/user/useCases/createUserSe
 import { GetUserProfileByIdController } from "@modules/user/useCases/getUserProfileById/GetUserProfileByIdController";
 import { GetUserProfileByTokenController } from "@modules/user/useCases/getUserProfileByToken/GetUserProfileByTokenController";
 import { RefreshUserTokenController } from "@modules/user/useCases/refreshUserToken/RefreshUserTokenController";
+import { SendUserVerificationMailController } from "@modules/user/useCases/sendUserVerificationMail/SendUserVerificationMailController";
 import { UpdateUserController } from "@modules/user/useCases/updateUser/UpdateUserController";
 import { UpdateUserPasswordController } from "@modules/user/useCases/updateUserPassword/UpdateUserPasswordController";
 
@@ -16,6 +17,13 @@ const usersRoutes = Router();
 // POST
 const create_user = new CreateUserController();
 usersRoutes.post("/", ensureRecaptchaIsValid, create_user.handle);
+
+const send_activation_email = new SendUserVerificationMailController();
+usersRoutes.post(
+  "/send-activation-mail",
+  ensureAuthenticated,
+  send_activation_email.handle
+);
 
 const create_session = new CreateUserSessionController();
 usersRoutes.post("/sessions", ensureRecaptchaIsValid, create_session.handle);
@@ -32,18 +40,12 @@ usersRoutes.get("/", ensureAuthenticated, get_user_by_token.handle);
 
 // PUT
 const update_user = new UpdateUserController();
-usersRoutes.put(
-  "/",
-  ensureRecaptchaIsValid,
-  ensureAuthenticated,
-  update_user.handle
-);
+usersRoutes.put("/", ensureAuthenticated, update_user.handle);
 
 // PATCH
 const update_user_password = new UpdateUserPasswordController();
 usersRoutes.patch(
   "/password",
-  ensureRecaptchaIsValid,
   ensureAuthenticated,
   update_user_password.handle
 );

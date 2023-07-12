@@ -8,4 +8,12 @@ export interface IUsersRepository {
   findByEmail(email: string): Promise<User | undefined>;
   update(date: IUserUpdateDTO): Promise<void>;
   updatePassword(user_id: string, new_password: string): Promise<void>;
+  updateVerificationKey(
+    user_id: string,
+    new_verification_key: string
+  ): Promise<void>;
+  updateForgotPasswordKey(
+    user_id: string,
+    new_forgot_password_key: string
+  ): Promise<void>;
 }

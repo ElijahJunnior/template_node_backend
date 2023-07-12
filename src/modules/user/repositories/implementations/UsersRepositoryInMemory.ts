@@ -60,4 +60,26 @@ export class UsersRepositoryInMemory implements IUsersRepository {
       user.password = new_password;
     }
   }
+
+  async updateForgotPasswordKey(
+    user_id: string,
+    new_forgot_password_key: string
+  ): Promise<void> {
+    const user = this.users.find((user) => user.id === user_id);
+
+    if (user != null) {
+      user.forgot_password_key = new_forgot_password_key;
+    }
+  }
+
+  async updateVerificationKey(
+    user_id: string,
+    new_verification_key: string
+  ): Promise<void> {
+    const user = this.users.find((user) => user.id === user_id);
+
+    if (user != null) {
+      user.verification_key = new_verification_key;
+    }
+  }
 }
