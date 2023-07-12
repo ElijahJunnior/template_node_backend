@@ -6,6 +6,7 @@ import { CreateUserSessionController } from "@modules/user/useCases/createUserSe
 import { GetUserProfileByIdController } from "@modules/user/useCases/getUserProfileById/GetUserProfileByIdController";
 import { GetUserProfileByTokenController } from "@modules/user/useCases/getUserProfileByToken/GetUserProfileByTokenController";
 import { RefreshUserTokenController } from "@modules/user/useCases/refreshUserToken/RefreshUserTokenController";
+import { SendUserForgotPasswordMailController } from "@modules/user/useCases/sendUserForgotPasswordMail/SendUserForgotPasswordMailController";
 import { SendUserVerificationMailController } from "@modules/user/useCases/sendUserVerificationMail/SendUserVerificationMailController";
 import { UpdateUserController } from "@modules/user/useCases/updateUser/UpdateUserController";
 import { UpdateUserPasswordController } from "@modules/user/useCases/updateUserPassword/UpdateUserPasswordController";
@@ -23,6 +24,13 @@ usersRoutes.post(
   "/send-activation-mail",
   ensureAuthenticated,
   send_activation_email.handle
+);
+
+const send_forgot_password_mail = new SendUserForgotPasswordMailController();
+usersRoutes.post(
+  "/forgot-password",
+  ensureRecaptchaIsValid,
+  send_forgot_password_mail.handle
 );
 
 const create_session = new CreateUserSessionController();
