@@ -10,6 +10,7 @@ import { SendUserForgotPasswordMailController } from "@modules/user/useCases/sen
 import { SendUserVerificationMailController } from "@modules/user/useCases/sendUserVerificationMail/SendUserVerificationMailController";
 import { UpdateUserController } from "@modules/user/useCases/updateUser/UpdateUserController";
 import { UpdateUserPasswordController } from "@modules/user/useCases/updateUserPassword/UpdateUserPasswordController";
+import { VerifyUserAccountController } from "@modules/user/useCases/verifyUserAccount/VerifyUserAccountController";
 
 import { ensureAuthenticated } from "../middlewares/ensureAuthenticated";
 
@@ -56,6 +57,13 @@ usersRoutes.patch(
   "/password",
   ensureAuthenticated,
   update_user_password.handle
+);
+
+const verify_user_account = new VerifyUserAccountController();
+usersRoutes.patch(
+  "/activate",
+  ensureRecaptchaIsValid,
+  verify_user_account.handle
 );
 
 export { usersRoutes };

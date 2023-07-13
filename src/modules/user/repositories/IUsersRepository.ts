@@ -16,4 +16,9 @@ export interface IUsersRepository {
     user_id: string,
     new_forgot_password_key: string
   ): Promise<void>;
+  setVerifiedAndClearVerificationKey(user_id: string): Promise<void>;
+  updatedPasswordAndClearForgotKey(
+    user_id: string,
+    new_password: string
+  ): Promise<void>;
 }
