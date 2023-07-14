@@ -5,10 +5,10 @@ export class User {
   email: string;
   name: string;
   password: string;
-  verified: boolean;
+  validated: boolean;
   created_at: Date;
 
-  verification_key: string;
+  validation_key: string;
   forgot_password_key: string;
 
   constructor() {
@@ -16,8 +16,8 @@ export class User {
       this.id = uuid();
     }
 
-    if (this.verified == null) {
-      this.verified = false;
+    if (this.validated == null) {
+      this.validated = false;
     }
 
     if (this.created_at == null) {

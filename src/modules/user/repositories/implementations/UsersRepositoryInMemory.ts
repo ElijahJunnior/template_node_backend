@@ -72,23 +72,23 @@ export class UsersRepositoryInMemory implements IUsersRepository {
     }
   }
 
-  async updateVerificationKey(
+  async updateValidationKey(
     user_id: string,
-    new_verification_key: string
+    new_validation_key: string
   ): Promise<void> {
     const user = this.users.find((user) => user.id === user_id);
 
     if (user != null) {
-      user.verification_key = new_verification_key;
+      user.validation_key = new_validation_key;
     }
   }
 
-  async setVerifiedAndClearVerificationKey(user_id: string): Promise<void> {
+  async setValidatedAndClearValidationKey(user_id: string): Promise<void> {
     const user = this.users.find((user) => user.id === user_id);
 
     if (user != null) {
-      user.verified = true;
-      user.verification_key = "";
+      user.validated = true;
+      user.validation_key = "";
     }
   }
 

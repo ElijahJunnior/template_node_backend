@@ -16,7 +16,7 @@ export class SessionMap {
         id: user.id,
         name: user.name,
         email: user.email,
-        verified: user.verified,
+        validated: user.validated,
         created_at: user.created_at,
       },
       token,

@@ -1,15 +1,15 @@
 import { AppError } from "@shared/errors/AppError";
 
-export namespace VerifyUserAccountErro {
+export namespace ValidateUserAccountErro {
   export class InvalidActivationKey extends AppError {
     constructor() {
-      super("A Chave de Ativação informada é inválida!");
+      super("A Chave de Validação informada é inválida!");
     }
   }
 
   export class ExpiredActivationKey extends AppError {
     constructor() {
-      super("A Chave de Ativação informada está expirada!");
+      super("A Chave de Validação informada está expirada!");
     }
   }
 }

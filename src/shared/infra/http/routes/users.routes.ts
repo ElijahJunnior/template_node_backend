@@ -7,10 +7,10 @@ import { GetUserProfileByIdController } from "@modules/user/useCases/getUserProf
 import { GetUserProfileByTokenController } from "@modules/user/useCases/getUserProfileByToken/GetUserProfileByTokenController";
 import { RefreshUserTokenController } from "@modules/user/useCases/refreshUserToken/RefreshUserTokenController";
 import { SendUserForgotPasswordMailController } from "@modules/user/useCases/sendUserForgotPasswordMail/SendUserForgotPasswordMailController";
-import { SendUserVerificationMailController } from "@modules/user/useCases/sendUserVerificationMail/SendUserVerificationMailController";
+import { SendUserValidationMailController } from "@modules/user/useCases/sendUserValidationMail/SendUserValidationMailController";
 import { UpdateUserController } from "@modules/user/useCases/updateUser/UpdateUserController";
 import { UpdateUserPasswordController } from "@modules/user/useCases/updateUserPassword/UpdateUserPasswordController";
-import { VerifyUserAccountController } from "@modules/user/useCases/verifyUserAccount/VerifyUserAccountController";
+import { ValidateUserAccountController } from "@modules/user/useCases/validateUserAccount/ValidateUserAccountController";
 
 import { ensureAuthenticated } from "../middlewares/ensureAuthenticated";
 
@@ -20,16 +20,16 @@ const usersRoutes = Router();
 const create_user = new CreateUserController();
 usersRoutes.post("/", ensureRecaptchaIsValid, create_user.handle);
 
-const send_activation_email = new SendUserVerificationMailController();
+const send_validation_mail = new SendUserValidationMailController();
 usersRoutes.post(
-  "/send-activation-mail",
+  "/send-validation-message",
   ensureAuthenticated,
-  send_activation_email.handle
+  send_validation_mail.handle
 );
 
 const send_forgot_password_mail = new SendUserForgotPasswordMailController();
 usersRoutes.post(
-  "/forgot-password",
+  "/send-forgot-pass-message",
   ensureRecaptchaIsValid,
   send_forgot_password_mail.handle
 );
@@ -59,11 +59,11 @@ usersRoutes.patch(
   update_user_password.handle
 );
 
-const verify_user_account = new VerifyUserAccountController();
+const validate_user_account = new ValidateUserAccountController();
 usersRoutes.patch(
-  "/activate",
+  "/validate-account",
   ensureRecaptchaIsValid,
-  verify_user_account.handle
+  validate_user_account.handle
 );
 
 export { usersRoutes };

@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
 import { container } from "tsyringe";
 
-import { SendUserVerificationMailUseCase } from "./SendUserVerificationMailUseCase";
+import { SendUserValidationMailUseCase } from "./SendUserValidationMailUseCase";
 
-export class SendUserVerificationMailController {
+export class SendUserValidationMailController {
   async handle(req: Request, res: Response): Promise<Response> {
     const { id } = req.user;
 
-    const use_case = container.resolve(SendUserVerificationMailUseCase);
+    const use_case = container.resolve(SendUserValidationMailUseCase);
 
     await use_case.execute(id);
 

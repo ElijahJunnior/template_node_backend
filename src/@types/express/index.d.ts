@@ -5,7 +5,7 @@ declare namespace Express {
       id: string;
       email: string;
       name: string;
-      verified: boolean;
+      validated: boolean;
       created_at: Date;
     };
   }

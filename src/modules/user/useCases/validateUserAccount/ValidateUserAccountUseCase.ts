@@ -4,14 +4,14 @@ import { inject, injectable } from "tsyringe";
 import { UserError } from "@modules/user/errors/UserError";
 import { IUsersRepository } from "@modules/user/repositories/IUsersRepository";
 
-import { VerifyUserAccountErro } from "./VerifyUserAccountErro";
+import { ValidateUserAccountErro } from "./ValidateUserAccountErro";
 
 interface IPayload {
   sub: string;
 }
 
 @injectable()
-export class VerifyUserAccountUseCase {
+export class ValidateUserAccountUseCase {
   constructor(
     @inject("UsersRepository")
     private readonly usersRepository: IUsersRepository
@@ -26,22 +26,22 @@ export class VerifyUserAccountUseCase {
       throw new UserError.UserNotFound();
     }
 
-    if (user.verification_key !== activation_key) {
-      throw new VerifyUserAccountErro.InvalidActivationKey();
+    if (user.validation_key !== activation_key) {
+      throw new ValidateUserAccountErro.InvalidActivationKey();
     }
 
     try {
       verify(activation_key, process.env.JWT_VERIFY_SECRET as string);
     } catch (err) {
-      await this.usersRepository.updateVerificationKey(user.id, "");
+      await this.usersRepository.updateValidationKey(user.id, "");
 
       if (err instanceof TokenExpiredError) {
-        throw new VerifyUserAccountErro.ExpiredActivationKey();
+        throw new ValidateUserAccountErro.ExpiredActivationKey();
       }
 
-      throw new VerifyUserAccountErro.InvalidActivationKey();
+      throw new ValidateUserAccountErro.InvalidActivationKey();
     }
 
-    await this.usersRepository.setVerifiedAndClearVerificationKey(user_id);
+    await this.usersRepository.setValidatedAndClearValidationKey(user_id);
   }
 }

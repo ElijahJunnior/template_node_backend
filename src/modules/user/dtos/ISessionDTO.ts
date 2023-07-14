@@ -3,7 +3,7 @@ export interface ISessionDTO {
     id: string;
     name: string;
     email: string;
-    verified: boolean;
+    validated: boolean;
     created_at: Date;
   };
   token: string;

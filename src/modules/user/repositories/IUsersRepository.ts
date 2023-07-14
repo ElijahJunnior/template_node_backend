@@ -8,15 +8,15 @@ export interface IUsersRepository {
   findByEmail(email: string): Promise<User | undefined>;
   update(date: IUserUpdateDTO): Promise<void>;
   updatePassword(user_id: string, new_password: string): Promise<void>;
-  updateVerificationKey(
+  updateValidationKey(
     user_id: string,
-    new_verification_key: string
+    new_validation_key: string
   ): Promise<void>;
   updateForgotPasswordKey(
     user_id: string,
     new_forgot_password_key: string
   ): Promise<void>;
-  setVerifiedAndClearVerificationKey(user_id: string): Promise<void>;
+  setValidatedAndClearValidationKey(user_id: string): Promise<void>;
   updatedPasswordAndClearForgotKey(
     user_id: string,
     new_password: string
