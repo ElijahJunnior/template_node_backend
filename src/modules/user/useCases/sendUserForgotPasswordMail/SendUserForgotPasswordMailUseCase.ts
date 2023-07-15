@@ -25,14 +25,14 @@ export class SendUserForgotPasswordMailUseCase {
     if (user != null) {
       const forgot_secret = process.env.JWT_FORGOT_PASSWORD_SECRET as string;
 
-      const forgot_password_key = sign({}, forgot_secret, {
+      const reset_password_key = sign({}, forgot_secret, {
         subject: user.id,
         expiresIn: process.env.JWT_FORGOT_PASSWORD_EXPIRES_IN,
       });
 
       await this.usersRepository.updateForgotPasswordKey(
         user.id,
-        forgot_password_key
+        reset_password_key
       );
 
       const view_path = resolve(
@@ -45,7 +45,7 @@ export class SendUserForgotPasswordMailUseCase {
       const variables: IVariables = {
         user_name: user.name,
         forgot_password_url:
-          front_end_url + `/users/refresh-password?t=${forgot_password_key}`,
+          front_end_url + `/users/refresh-password?t=${reset_password_key}`,
       };
 
       try {

@@ -9,7 +9,7 @@ export class User {
   created_at: Date;
 
   validation_key: string;
-  forgot_password_key: string;
+  reset_password_key: string;
 
   constructor() {
     if (this.id == null) {

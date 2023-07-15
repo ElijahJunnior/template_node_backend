@@ -63,12 +63,12 @@ export class UsersRepositoryInMemory implements IUsersRepository {
 
   async updateForgotPasswordKey(
     user_id: string,
-    new_forgot_password_key: string
+    new_reset_password_key: string
   ): Promise<void> {
     const user = this.users.find((user) => user.id === user_id);
 
     if (user != null) {
-      user.forgot_password_key = new_forgot_password_key;
+      user.reset_password_key = new_reset_password_key;
     }
   }
 
@@ -100,7 +100,7 @@ export class UsersRepositoryInMemory implements IUsersRepository {
 
     if (user != null) {
       user.password = new_password;
-      user.forgot_password_key = "";
+      user.reset_password_key = "";
     }
   }
 }

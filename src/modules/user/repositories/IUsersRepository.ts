@@ -14,7 +14,7 @@ export interface IUsersRepository {
   ): Promise<void>;
   updateForgotPasswordKey(
     user_id: string,
-    new_forgot_password_key: string
+    new_reset_password_key: string
   ): Promise<void>;
   setValidatedAndClearValidationKey(user_id: string): Promise<void>;
   updatedPasswordAndClearForgotKey(

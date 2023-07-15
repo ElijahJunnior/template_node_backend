@@ -6,6 +6,7 @@ import { CreateUserSessionController } from "@modules/user/useCases/createUserSe
 import { GetUserProfileByIdController } from "@modules/user/useCases/getUserProfileById/GetUserProfileByIdController";
 import { GetUserProfileByTokenController } from "@modules/user/useCases/getUserProfileByToken/GetUserProfileByTokenController";
 import { RefreshUserTokenController } from "@modules/user/useCases/refreshUserToken/RefreshUserTokenController";
+import { ReplaceUserPasswordController } from "@modules/user/useCases/replaceUserPassword/ReplaceUserPasswordController";
 import { SendUserForgotPasswordMailController } from "@modules/user/useCases/sendUserForgotPasswordMail/SendUserForgotPasswordMailController";
 import { SendUserValidationMailController } from "@modules/user/useCases/sendUserValidationMail/SendUserValidationMailController";
 import { UpdateUserController } from "@modules/user/useCases/updateUser/UpdateUserController";
@@ -64,6 +65,13 @@ usersRoutes.patch(
   "/validate-account",
   ensureRecaptchaIsValid,
   validate_user_account.handle
+);
+
+const replace_password = new ReplaceUserPasswordController();
+usersRoutes.patch(
+  "/replace-password",
+  ensureRecaptchaIsValid,
+  replace_password.handle
 );
 
 export { usersRoutes };
