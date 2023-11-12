@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { container } from "tsyringe";
 
+import { RequestErro } from "@shared/errors/RequestErro";
+
 import { updateUserPasswordSchema } from "./UpdateUserPasswordSchema";
 import { UpdateUserPasswordUseCase } from "./UpdateUserPasswordUseCase";
 
@@ -11,14 +13,18 @@ export class UpdateUserPasswordController {
         stripUnknown: true,
       });
 
-    const { id: user_id } = req.user;
+    const { auth } = req;
+
+    if (auth == null || auth.user == null) {
+      throw new RequestErro.InvalidToken();
+    }
 
     const use_case = container.resolve(UpdateUserPasswordUseCase);
 
     await use_case.execute({
       new_password,
       old_password,
-      user_id,
+      user_id: auth.user.id,
     });
 
     return res.send();

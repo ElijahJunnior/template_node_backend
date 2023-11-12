@@ -1,11 +1,7 @@
 export interface ISessionDTO {
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    validated: boolean;
-    created_at: Date;
-  };
-  token: string;
-  refresh_token: string;
+  id: string;
+  user_id: string;
+  created_at: Date;
+  updated_at: Date;
+  expiration_date: Date;
 }

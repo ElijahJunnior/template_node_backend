@@ -1,11 +1,17 @@
 import { compare } from "bcryptjs";
 import { sign } from "jsonwebtoken";
 import { inject, injectable } from "tsyringe";
+import { v4 as uuid } from "uuid";
 
-import { ISessionDTO } from "@modules/user/dtos/ISessionDTO";
+import { IUserSessionDTO } from "@modules/user/dtos/IUserSessionDTO";
 import { SessionMap } from "@modules/user/mappers/SessionMap";
 import { ISessionsRepository } from "@modules/user/repositories/ISessionsRepository";
 import { IUsersRepository } from "@modules/user/repositories/IUsersRepository";
+import { IPayloadJwt } from "@shared/types/IPayloadJwt";
+import {
+  convertDateToTimestamp,
+  handleJWTExpirationDate,
+} from "@shared/utils/DateHandle";
 
 import { CreateUserSessionError } from "./CreateUserSessionError";
 
@@ -26,7 +32,8 @@ export class CreateUserSessionUseCase {
   async execute({
     email,
     password,
-  }: ICreateSessionProps): Promise<ISessionDTO> {
+  }: ICreateSessionProps): Promise<IUserSessionDTO> {
+    // Validando dados do usuário
     const user = await this.usersRepository.findByEmail(email);
 
     if (user === undefined) {
@@ -39,38 +46,49 @@ export class CreateUserSessionUseCase {
       throw new CreateUserSessionError.InvalidAuthenticationData();
     }
 
+    // Gerando Token
     const token_secret = process.env.JWT_TOKEN_SECRET as string;
+    const token_interval = process.env.JWT_TOKEN_EXPIRES_IN as string;
+    const token_expiration = handleJWTExpirationDate(token_interval);
 
-    const token = sign({}, token_secret, {
-      subject: user.id,
-      expiresIn: process.env.JWT_TOKEN_EXPIRES_IN,
-    });
+    const payload: IPayloadJwt = {
+      sub: user.id,
+      roles: ["user"],
+      iat: convertDateToTimestamp(new Date()),
+      exp: convertDateToTimestamp(token_expiration),
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        validated: user.validated,
+      },
+    };
 
-    const refresh_token_secret = process.env.JWT_REFRESH_TOKEN_SECRET as string;
+    // Gerando Refresh Token
+    const token = sign(payload, token_secret);
 
-    const refresh_token = sign({}, refresh_token_secret, {
-      subject: user.id,
-      expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRES_IN,
-    });
+    const refresh_secret = process.env.JWT_REFRESH_TOKEN_SECRET as string;
+    const refresh_interval = process.env.JWT_REFRESH_TOKEN_EXPIRES_IN as string;
+    const refresh_expiration = handleJWTExpirationDate(refresh_interval);
+    const session_id = uuid();
 
-    const sessions_limit = (process.env.ACTIVE_SESSIONS_LIMIT ?? 20) as number;
+    payload.exp = convertDateToTimestamp(refresh_expiration);
+    payload.iat = convertDateToTimestamp(new Date());
+    payload.session_id = session_id;
 
-    const sessions = await this.sessionsRepository.findByUser(user.id);
+    const refresh_token = sign(payload, refresh_secret);
 
-    if (sessions.length >= sessions_limit) {
-      sessions.sort((a, b) => (a.updated_at < b.updated_at ? 1 : -1));
-
-      const last_session = sessions[sessions.length - 1];
-
-      await this.sessionsRepository.delete(last_session.id);
-    }
+    // Gravando dados e retornando resultado
+    await this.sessionsRepository.deleteExpiredByUser(user.id);
 
     await this.sessionsRepository.create({
+      id: session_id,
       user_id: user.id,
       refresh_token,
+      expiration_date: refresh_expiration,
     });
 
-    const session = SessionMap.toSessionDTO({
+    const session = SessionMap.toUserSessionDTO({
       refresh_token,
       token,
       user,

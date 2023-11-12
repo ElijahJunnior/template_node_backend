@@ -3,9 +3,9 @@ import { container } from "tsyringe";
 
 import { RequestErro } from "@shared/errors/RequestErro";
 
-import { GetUserProfileByTokenUseCase as UseCase } from "./GetUserProfileByTokenUseCase";
+import { FindUserSessionsUseCase as UseCase } from "./FindUserSessionsUseCase";
 
-export class GetUserProfileByTokenController {
+export class FindUserSessionsController {
   async handle(req: Request, res: Response): Promise<Response> {
     const { auth } = req;
 
@@ -15,8 +15,8 @@ export class GetUserProfileByTokenController {
 
     const use_case = container.resolve(UseCase);
 
-    const user = await use_case.execute(auth.user.id);
+    const sessions = await use_case.execute(auth.user.id);
 
-    return res.json(user);
+    return res.json(sessions);
   }
 }

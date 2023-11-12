@@ -1,4 +1,4 @@
-import { ISessionKeyDTO } from "@modules/user/dtos/ISessionKeyDTO";
+import { ICreateSessionDTO } from "@modules/user/dtos/ICreateSessionDTO";
 import { Session } from "@modules/user/entities/Session";
 
 import { ISessionsRepository } from "../ISessionsRepository";
@@ -20,17 +20,34 @@ export class SessionsRepositoryInMemory implements ISessionsRepository {
     }
   }
 
-  async create({ refresh_token, user_id }: ISessionKeyDTO): Promise<Session> {
+  async create({
+    id,
+    refresh_token,
+    user_id,
+    expiration_date,
+  }: ICreateSessionDTO): Promise<Session> {
     const session = new Session();
 
     Object.assign(session, {
+      id,
       user_id,
       refresh_token,
+      expiration_date,
     });
 
     this.sessions.push(session);
 
     return this.cloneSession(session);
+  }
+
+  async find(id: string): Promise<Session | undefined> {
+    const session = this.sessions.find((session) => session.id === id);
+
+    if (session != null) {
+      return this.cloneSession(session);
+    } else {
+      return undefined;
+    }
   }
 
   async findByUser(user_id: string): Promise<Session[]> {
@@ -43,18 +60,6 @@ export class SessionsRepositoryInMemory implements ISessionsRepository {
     } else {
       return user_sessions.map((session) => this.cloneSession(session));
     }
-  }
-
-  async findByUserToken({
-    refresh_token,
-    user_id,
-  }: ISessionKeyDTO): Promise<Session | undefined> {
-    const session = this.sessions.find(
-      (session) =>
-        session.user_id === user_id && session.refresh_token === refresh_token
-    );
-
-    return session != null ? this.cloneSession(session) : undefined;
   }
 
   async updateToken(id: string, new_refresh_token: string): Promise<void> {
@@ -79,6 +84,18 @@ export class SessionsRepositoryInMemory implements ISessionsRepository {
   async deleteByUser(user_id: string): Promise<void> {
     const sessions = this.sessions.filter(
       (session) => session.user_id === user_id
+    );
+
+    for (const session of sessions) {
+      await this.delete(session.id);
+    }
+  }
+
+  async deleteExpiredByUser(user_id: string): Promise<void> {
+    const sessions = this.sessions.filter(
+      (session) =>
+        session.user_id === user_id &&
+        session.expiration_date.toISOString() < new Date().toISOString()
     );
 
     for (const session of sessions) {

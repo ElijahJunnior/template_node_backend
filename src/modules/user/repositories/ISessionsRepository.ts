@@ -1,11 +1,12 @@
-import { ISessionKeyDTO } from "../dtos/ISessionKeyDTO";
+import { ICreateSessionDTO } from "../dtos/ICreateSessionDTO";
 import { Session } from "../entities/Session";
 
 export interface ISessionsRepository {
-  create(data: ISessionKeyDTO): Promise<Session>;
+  create(data: ICreateSessionDTO): Promise<Session>;
+  find(id: string): Promise<Session | undefined>;
   findByUser(user_id: string): Promise<Session[]>;
-  findByUserToken(data: ISessionKeyDTO): Promise<Session | undefined>;
   updateToken(id: string, new_refresh_token: string): Promise<void>;
   delete(id: string): Promise<void>;
   deleteByUser(user_id: string): Promise<void>;
+  deleteExpiredByUser(user_id: string): Promise<void>;
 }

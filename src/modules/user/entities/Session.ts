@@ -1,8 +1,10 @@
 import { v4 as uuid } from "uuid";
+
 export class Session {
   id: string;
   user_id: string;
   refresh_token: string;
+  expiration_date: Date;
   created_at: Date;
   updated_at: Date;
 

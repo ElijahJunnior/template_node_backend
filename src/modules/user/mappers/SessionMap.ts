@@ -1,8 +1,10 @@
 import { ISessionDTO } from "../dtos/ISessionDTO";
+import { IUserSessionDTO } from "../dtos/IUserSessionDTO";
+import { Session } from "../entities/Session";
 import { User } from "../entities/User";
 
 export class SessionMap {
-  static toSessionDTO({
+  static toUserSessionDTO({
     user,
     token,
     refresh_token,
@@ -10,7 +12,7 @@ export class SessionMap {
     user: User;
     token: string;
     refresh_token: string;
-  }): ISessionDTO {
+  }): IUserSessionDTO {
     const session = {
       user: {
         id: user.id,
@@ -21,6 +23,24 @@ export class SessionMap {
       },
       token,
       refresh_token,
+    };
+
+    return session;
+  }
+
+  static toSessionDTO({
+    created_at,
+    expiration_date,
+    id,
+    updated_at,
+    user_id,
+  }: Session): ISessionDTO {
+    const session = {
+      id,
+      user_id,
+      expiration_date,
+      created_at,
+      updated_at,
     };
 
     return session;
