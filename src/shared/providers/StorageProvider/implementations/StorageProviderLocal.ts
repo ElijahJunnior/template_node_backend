@@ -1,15 +1,20 @@
 import fs from "fs";
 import { resolve } from "path";
+import { Readable } from "stream";
 
-import upload from "@config/multerImageUpload";
+import { mainConfig } from "@config/mainConfig";
 
-import { IStorageProvider } from "../IStorageProvider";
+import { ACLType, IStorageProvider } from "../IStorageProvider";
 
 class StorageProviderLocal implements IStorageProvider {
-  async save(file: string, out_folder: string): Promise<string> {
-    const origin_path = resolve(upload.tmp_folder, file);
+  async uploadFile(
+    file: string,
+    folder?: string | undefined,
+    acl?: ACLType | undefined
+  ): Promise<string> {
+    const origin_path = resolve(mainConfig.temp_folder, file);
 
-    const out_folder_full = resolve(upload.tmp_folder, out_folder);
+    const out_folder_full = resolve(mainConfig.temp_folder, folder ?? "");
 
     if (!fs.existsSync(out_folder_full)) {
       await fs.promises.mkdir(out_folder_full, { recursive: true });
@@ -23,13 +28,20 @@ class StorageProviderLocal implements IStorageProvider {
   }
 
   async delete(file: string, folder: string): Promise<void> {
-    const path = resolve(upload.tmp_folder, folder, file);
+    const path = resolve(mainConfig.temp_folder, folder, file);
 
     try {
       await fs.promises.stat(path);
     } catch {}
 
     await fs.promises.unlink(path);
+  }
+
+  async streamDownload(
+    file: string,
+    folder?: string | undefined
+  ): Promise<Readable> {
+    throw new Error("Method not implemented.");
   }
 }
 

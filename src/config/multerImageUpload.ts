@@ -1,16 +1,13 @@
 import { Request } from "express";
 import { diskStorage, FileFilterCallback } from "multer";
-import { resolve } from "path";
 import { v4 as uuid } from "uuid";
 
+import { mainConfig } from "@config/mainConfig";
 import { AppError } from "@shared/errors/AppError";
 
-const tmp_folder = resolve(__dirname, "..", "..", "tmp");
-
 export default {
-  tmp_folder,
   storage: diskStorage({
-    destination: tmp_folder,
+    destination: mainConfig.temp_folder,
     filename: (req, file, cb) => {
       const [, file_extension] = file.mimetype.split("/");
 

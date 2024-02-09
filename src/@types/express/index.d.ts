@@ -6,5 +6,13 @@ declare global {
     export interface Request {
       auth?: IPayloadJwt;
     }
+
+    namespace Multer {
+      /** Object containing file metadata and access information. */
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      export interface File {
+        url?: string;
+      }
+    }
   }
 }
