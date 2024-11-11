@@ -1,4 +1,4 @@
-export function handleReplaceSpaceCharacter(
+export function replaceSpaceCharacter(
   value: string,
   new_character: string
 ): string {

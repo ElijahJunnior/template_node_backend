@@ -1,11 +1,11 @@
 import fs from "fs";
 import { resolve } from "path";
 
-import upload from "@config/multerUpload";
+import { mainConfig } from "@config/mainConfig";
 
 async function cleanTempFiles(files: string[]): Promise<void> {
   for (const file of files) {
-    const path = resolve(upload.tmp_folder, file);
+    const path = resolve(mainConfig.temp_folder, file);
 
     try {
       await fs.promises.stat(path);

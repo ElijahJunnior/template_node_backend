@@ -4,9 +4,9 @@ import { StorageEngine } from "multer";
 import { CreateMultipartUploadCommandOutput, S3 } from "@aws-sdk/client-s3";
 import { ACLType } from "@shared/providers/StorageProvider/IStorageProvider";
 
-import { handleReplaceAccent } from "./handleReplaceAccent";
-import { handleRemoveSpecialCharacters } from "./handleReplaceEspecialCharacters";
-import { handleReplaceSpaceCharacter } from "./handleReplaceSpaceCharacter";
+import { removeAccent } from "./removeAccent";
+import { removeSpecialCharacter } from "./removeSpecialCharacter";
+import { replaceSpaceCharacter } from "./replaceSpaceCharacter";
 
 interface IStorageMulterToS3Options {
   acl?: ACLType;
@@ -83,16 +83,16 @@ export class StorageMulterToS3 implements StorageEngine {
 
     safeFileName = safeFileName.toLowerCase().trim();
 
-    safeFileName = handleReplaceAccent(safeFileName);
+    safeFileName = removeAccent(safeFileName);
 
-    safeFileName = handleRemoveSpecialCharacters(safeFileName);
+    safeFileName = removeSpecialCharacter(safeFileName);
 
-    safeFileName = handleReplaceSpaceCharacter(safeFileName, "_");
+    safeFileName = replaceSpaceCharacter(safeFileName, "_");
 
     const fileHash =
-      Date.now().toString() + "-" + Math.round(Math.random() * 1e9).toString();
+      Date.now().toString() + "_" + Math.round(Math.random() * 1e9).toString();
 
-    const key = safeFileName + "-" + fileHash + ("." + fileExtension ?? "");
+    const key = safeFileName + "_" + fileHash + ("." + fileExtension);
 
     return key;
   }
