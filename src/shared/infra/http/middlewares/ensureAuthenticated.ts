@@ -1,14 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { TokenExpiredError, verify } from "jsonwebtoken";
-import { container } from "tsyringe";
 
-import { UserMap } from "@modules/user/mappers/UserMap";
-import { IUsersRepository } from "@modules/user/repositories/IUsersRepository";
-import { AppError } from "@shared/errors/AppError";
-
-interface IPayload {
-  sub: string;
-}
+import { mainConfig } from "@config/mainConfig";
+import { AuthError } from "@shared/errors/AuthError";
+import { IPayloadJwt } from "@shared/types/IPayloadJwt";
 
 async function ensureAuthenticated(
   req: Request,
@@ -18,35 +13,33 @@ async function ensureAuthenticated(
   const authHeader = req.headers.authorization;
 
   if (authHeader == null || authHeader === "") {
-    throw new AppError("Token não informado!", 401);
+    throw new AuthError.TokenNotProvided();
   }
 
   const [, token] = authHeader.split(" ");
 
-  try {
-    const { sub: user_id } = verify(
-      token,
-      process.env.JWT_TOKEN_SECRET as string
-    ) as IPayload;
-
-    const usersRepository: IUsersRepository =
-      container.resolve("UsersRepository");
-
-    const user = await usersRepository.findById(user_id);
-
-    if (user == null) {
-      throw new AppError("Usuário não encontrado", 401);
-    }
-
-    req.user = UserMap.toUserDTO(user);
+  if (token === mainConfig.system_auth_key) {
+    req.auth = {
+      roles: ["system"],
+    };
 
     nxt();
-  } catch (err) {
-    if (err instanceof TokenExpiredError) {
-      throw new AppError("Token expirado!", 401);
-    }
+  } else {
+    try {
+      const auth = verify(token, mainConfig.jwt_token_secret) as IPayloadJwt;
 
-    throw new AppError("Token inválido!", 401);
+      req.auth = auth;
+
+      nxt();
+
+      return;
+    } catch (err) {
+      if (err instanceof TokenExpiredError) {
+        throw new AuthError.ExpiredToken();
+      }
+
+      throw new AuthError.InvalidToken();
+    }
   }
 }
 

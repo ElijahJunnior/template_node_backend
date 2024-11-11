@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { container } from "tsyringe";
 
-import { RequestErro } from "@shared/errors/RequestErro";
+import { AuthError } from "@shared/errors/AuthError";
 
 import { updateUserPasswordSchema } from "./UpdateUserPasswordSchema";
 import { UpdateUserPasswordUseCase } from "./UpdateUserPasswordUseCase";
@@ -16,7 +16,7 @@ export class UpdateUserPasswordController {
     const { auth } = req;
 
     if (auth == null || auth.user == null) {
-      throw new RequestErro.InvalidToken();
+      throw new AuthError.InvalidToken();
     }
 
     const use_case = container.resolve(UpdateUserPasswordUseCase);

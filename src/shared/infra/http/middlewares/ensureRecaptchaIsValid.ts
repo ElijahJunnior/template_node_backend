@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Request, Response, NextFunction } from "express";
 
+import { mainConfig } from "@config/mainConfig";
 import { AppError } from "@shared/errors/AppError";
 
 async function ensureRecaptchaIsValid(
@@ -9,9 +10,13 @@ async function ensureRecaptchaIsValid(
   nxt: NextFunction
 ): Promise<void> {
   try {
-    const recaptcha_secret_key = process.env.RE_CAPTCHA_SECRET_KEY as string;
+    const { re_captcha_enabled, re_captcha_secret_key } = mainConfig;
 
     let recaptcha = req.body?.recaptcha_token as string | undefined;
+
+    if (!re_captcha_enabled) {
+      return nxt();
+    }
 
     if (recaptcha == null) {
       const { "recaptcha-token": header_recaptcha } = req.headers;
@@ -23,11 +28,7 @@ async function ensureRecaptchaIsValid(
       }
     }
 
-    if (process.env.DEV_MODE === "S") {
-      return nxt();
-    }
-
-    const VERIFY_URL = `https://www.google.com/recaptcha/api/siteverify?secret=${recaptcha_secret_key}&response=${recaptcha}`;
+    const VERIFY_URL = `https://www.google.com/recaptcha/api/siteverify?secret=${re_captcha_secret_key}&response=${recaptcha}`;
 
     const { data } = await axios.post(VERIFY_URL);
 

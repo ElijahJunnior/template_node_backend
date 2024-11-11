@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { container } from "tsyringe";
 
-import { RequestErro } from "@shared/errors/RequestErro";
+import { AuthError } from "@shared/errors/AuthError";
 
 import { FindUserSessionsUseCase as UseCase } from "./FindUserSessionsUseCase";
 
@@ -10,7 +10,7 @@ export class FindUserSessionsController {
     const { auth } = req;
 
     if (auth == null || auth.user == null) {
-      throw new RequestErro.InvalidToken();
+      throw new AuthError.InvalidToken();
     }
 
     const use_case = container.resolve(UseCase);
