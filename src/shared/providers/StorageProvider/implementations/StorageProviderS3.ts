@@ -6,15 +6,18 @@ import { Readable } from "stream";
 import { S3 } from "@aws-sdk/client-s3";
 import { mainConfig } from "@config/mainConfig";
 
-import { ACLType, IStorageProvider } from "../IStorageProvider";
+import { ACLType, IStorageProvider, IUploadResult } from "../IStorageProvider";
 
 class StorageProviderS3 implements IStorageProvider {
   private readonly client: S3;
+  private readonly region: string;
   private readonly bucket_name: string;
 
   constructor() {
+    this.region = process.env.AWS_BUCKET_REGION ?? "";
+
     this.client = new S3({
-      region: process.env.AWS_BUCKET_REGION,
+      region: this.region,
     });
 
     this.bucket_name = process.env.AWS_BUCKET as string;
@@ -32,12 +35,14 @@ class StorageProviderS3 implements IStorageProvider {
     file: string,
     folder?: string,
     ACL?: ACLType
-  ): Promise<string> {
+  ): Promise<IUploadResult> {
     const file_path = resolve(mainConfig.temp_folder, file);
 
     const file_content = await fs.promises.readFile(file_path);
 
     const file_content_type = mime.getType(file_path);
+
+    folder = folder != null && folder.length > 0 ? folder + "/" : "";
 
     const Key = this.handlePath(file, folder);
 
@@ -51,7 +56,12 @@ class StorageProviderS3 implements IStorageProvider {
 
     await fs.promises.unlink(file_path);
 
-    return file;
+    return {
+      destination: folder,
+      filename: file,
+      path: Key,
+      url: `https://${this.bucket_name}.s3.${this.region}.amazonaws.com/${Key}`,
+    };
   }
 
   async delete(file: string, folder?: string): Promise<void> {

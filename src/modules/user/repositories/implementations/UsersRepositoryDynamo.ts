@@ -12,19 +12,17 @@ export class UsersRepositoryDynamo implements IUsersRepository {
 
       Object.assign(user, { email, name, password });
 
-      await dynamoDB
-        .put({
-          TableName,
-          Item: {
-            PK: "user",
-            SK: `user.id:${user.id}`,
-            "GSI1-PK": "user",
-            "GSI1-SK": `user.email:${email}`,
-            ...user,
-            created_at: user.created_at.toISOString(),
-          },
-        })
-        .promise();
+      await dynamoDB.put({
+        TableName,
+        Item: {
+          PK: "user",
+          SK: `user.id:${user.id}`,
+          "GSI1-PK": "user",
+          "GSI1-SK": `user.email:${email}`,
+          ...user,
+          created_at: user.created_at.toISOString(),
+        },
+      });
 
       return user;
     } catch (err) {
@@ -34,15 +32,13 @@ export class UsersRepositoryDynamo implements IUsersRepository {
 
   async findById(id: string): Promise<User | undefined> {
     try {
-      const { Item } = await dynamoDB
-        .get({
-          TableName,
-          Key: {
-            PK: "user",
-            SK: `user.id:${id}`,
-          },
-        })
-        .promise();
+      const { Item } = await dynamoDB.get({
+        TableName,
+        Key: {
+          PK: "user",
+          SK: `user.id:${id}`,
+        },
+      });
 
       const user = (Item as User) ?? undefined;
 
@@ -54,21 +50,19 @@ export class UsersRepositoryDynamo implements IUsersRepository {
 
   async findByEmail(email: string): Promise<User | undefined> {
     try {
-      const { Items } = await dynamoDB
-        .query({
-          TableName,
-          IndexName: "GSI1",
-          KeyConditionExpression: "#P1 = :P1 and #P2 = :P2",
-          ExpressionAttributeNames: {
-            "#P1": `GSI1-PK`,
-            "#P2": `GSI1-SK`,
-          },
-          ExpressionAttributeValues: {
-            ":P1": `user`,
-            ":P2": `user.email:${email}`,
-          },
-        })
-        .promise();
+      const { Items } = await dynamoDB.query({
+        TableName,
+        IndexName: "GSI1",
+        KeyConditionExpression: "#P1 = :P1 and #P2 = :P2",
+        ExpressionAttributeNames: {
+          "#P1": `GSI1-PK`,
+          "#P2": `GSI1-SK`,
+        },
+        ExpressionAttributeValues: {
+          ":P1": `user`,
+          ":P2": `user.email:${email}`,
+        },
+      });
 
       if (Items == null || Items.length < 1) {
         return undefined;
@@ -82,22 +76,20 @@ export class UsersRepositoryDynamo implements IUsersRepository {
 
   async update({ user_id, name }: IUserUpdateDTO): Promise<void> {
     try {
-      await dynamoDB
-        .update({
-          TableName,
-          Key: {
-            PK: "user",
-            SK: `user.id:${user_id}`,
-          },
-          UpdateExpression: `set #P1 = :P1`,
-          ExpressionAttributeNames: {
-            "#P1": "name",
-          },
-          ExpressionAttributeValues: {
-            ":P1": name,
-          },
-        })
-        .promise();
+      await dynamoDB.update({
+        TableName,
+        Key: {
+          PK: "user",
+          SK: `user.id:${user_id}`,
+        },
+        UpdateExpression: `set #P1 = :P1`,
+        ExpressionAttributeNames: {
+          "#P1": "name",
+        },
+        ExpressionAttributeValues: {
+          ":P1": name,
+        },
+      });
     } catch (err) {
       throw err;
     }
@@ -105,22 +97,20 @@ export class UsersRepositoryDynamo implements IUsersRepository {
 
   async updatePassword(user_id: string, new_password: string): Promise<void> {
     try {
-      await dynamoDB
-        .update({
-          TableName,
-          Key: {
-            PK: "user",
-            SK: `user.id:${user_id}`,
-          },
-          UpdateExpression: `set #P1 = :P1`,
-          ExpressionAttributeNames: {
-            "#P1": "password",
-          },
-          ExpressionAttributeValues: {
-            ":P1": new_password,
-          },
-        })
-        .promise();
+      await dynamoDB.update({
+        TableName,
+        Key: {
+          PK: "user",
+          SK: `user.id:${user_id}`,
+        },
+        UpdateExpression: `set #P1 = :P1`,
+        ExpressionAttributeNames: {
+          "#P1": "password",
+        },
+        ExpressionAttributeValues: {
+          ":P1": new_password,
+        },
+      });
     } catch (err) {
       throw err;
     }
@@ -131,22 +121,20 @@ export class UsersRepositoryDynamo implements IUsersRepository {
     new_validation_key: string
   ): Promise<void> {
     try {
-      await dynamoDB
-        .update({
-          TableName,
-          Key: {
-            PK: "user",
-            SK: `user.id:${user_id}`,
-          },
-          UpdateExpression: `set #P1 = :P1`,
-          ExpressionAttributeNames: {
-            "#P1": "validation_key",
-          },
-          ExpressionAttributeValues: {
-            ":P1": new_validation_key,
-          },
-        })
-        .promise();
+      await dynamoDB.update({
+        TableName,
+        Key: {
+          PK: "user",
+          SK: `user.id:${user_id}`,
+        },
+        UpdateExpression: `set #P1 = :P1`,
+        ExpressionAttributeNames: {
+          "#P1": "validation_key",
+        },
+        ExpressionAttributeValues: {
+          ":P1": new_validation_key,
+        },
+      });
     } catch (err) {
       throw err;
     }
@@ -157,22 +145,20 @@ export class UsersRepositoryDynamo implements IUsersRepository {
     new_reset_password_key: string
   ): Promise<void> {
     try {
-      await dynamoDB
-        .update({
-          TableName,
-          Key: {
-            PK: "user",
-            SK: `user.id:${user_id}`,
-          },
-          UpdateExpression: `set #P1 = :P1`,
-          ExpressionAttributeNames: {
-            "#P1": "reset_password_key",
-          },
-          ExpressionAttributeValues: {
-            ":P1": new_reset_password_key,
-          },
-        })
-        .promise();
+      await dynamoDB.update({
+        TableName,
+        Key: {
+          PK: "user",
+          SK: `user.id:${user_id}`,
+        },
+        UpdateExpression: `set #P1 = :P1`,
+        ExpressionAttributeNames: {
+          "#P1": "reset_password_key",
+        },
+        ExpressionAttributeValues: {
+          ":P1": new_reset_password_key,
+        },
+      });
     } catch (err) {
       throw err;
     }
@@ -180,24 +166,22 @@ export class UsersRepositoryDynamo implements IUsersRepository {
 
   async setValidatedAndClearValidationKey(user_id: string): Promise<void> {
     try {
-      await dynamoDB
-        .update({
-          TableName,
-          Key: {
-            PK: "user",
-            SK: `user.id:${user_id}`,
-          },
-          UpdateExpression: `set #P1 = :P1, #P2 = :P2`,
-          ExpressionAttributeNames: {
-            "#P1": "validation_key",
-            "#P2": "validated",
-          },
-          ExpressionAttributeValues: {
-            ":P1": "",
-            ":P2": true,
-          },
-        })
-        .promise();
+      await dynamoDB.update({
+        TableName,
+        Key: {
+          PK: "user",
+          SK: `user.id:${user_id}`,
+        },
+        UpdateExpression: `set #P1 = :P1, #P2 = :P2`,
+        ExpressionAttributeNames: {
+          "#P1": "validation_key",
+          "#P2": "validated",
+        },
+        ExpressionAttributeValues: {
+          ":P1": "",
+          ":P2": true,
+        },
+      });
     } catch (err) {
       throw err;
     }
@@ -208,24 +192,22 @@ export class UsersRepositoryDynamo implements IUsersRepository {
     new_password: string
   ): Promise<void> {
     try {
-      await dynamoDB
-        .update({
-          TableName,
-          Key: {
-            PK: "user",
-            SK: `user.id:${user_id}`,
-          },
-          UpdateExpression: `set #P1 = :P1, #P2 = :P2`,
-          ExpressionAttributeNames: {
-            "#P1": "password",
-            "#P2": "reset_password_key",
-          },
-          ExpressionAttributeValues: {
-            ":P1": new_password,
-            ":P2": "",
-          },
-        })
-        .promise();
+      await dynamoDB.update({
+        TableName,
+        Key: {
+          PK: "user",
+          SK: `user.id:${user_id}`,
+        },
+        UpdateExpression: `set #P1 = :P1, #P2 = :P2`,
+        ExpressionAttributeNames: {
+          "#P1": "password",
+          "#P2": "reset_password_key",
+        },
+        ExpressionAttributeValues: {
+          ":P1": new_password,
+          ":P2": "",
+        },
+      });
     } catch (err) {
       throw err;
     }

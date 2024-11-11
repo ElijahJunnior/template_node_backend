@@ -9,8 +9,19 @@ export type ACLType =
   | "bucket-owner-read"
   | "bucket-owner-full-control";
 
+export interface IUploadResult {
+  destination: string;
+  filename: string;
+  path: string;
+  url: string;
+}
+
 export interface IStorageProvider {
-  uploadFile(file: string, folder?: string, acl?: ACLType): Promise<string>;
+  uploadFile(
+    file: string,
+    folder?: string,
+    acl?: ACLType
+  ): Promise<IUploadResult>;
   delete(file: string, folder?: string): Promise<void>;
   streamDownload(file: string, folder?: string): Promise<Readable>;
 }

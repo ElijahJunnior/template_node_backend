@@ -21,21 +21,19 @@ export class SessionsRepositoryDynamo implements ISessionsRepository {
         expiration_date,
       });
 
-      await dynamoDB
-        .put({
-          TableName,
-          Item: {
-            PK: `session`,
-            SK: `session.id:${id}`,
-            "GSI1-PK": `user.id:${user_id}`,
-            "GSI1-SK": `session.id:${id}.created_at:${session.created_at.toISOString()}`,
-            ...session,
-            created_at: session.created_at.toISOString(),
-            updated_at: session.updated_at.toISOString(),
-            expiration_date: session.expiration_date.toISOString(),
-          },
-        })
-        .promise();
+      await dynamoDB.put({
+        TableName,
+        Item: {
+          PK: `session`,
+          SK: `session.id:${id}`,
+          "GSI1-PK": `user.id:${user_id}`,
+          "GSI1-SK": `session.id:${id}.created_at:${session.created_at.toISOString()}`,
+          ...session,
+          created_at: session.created_at.toISOString(),
+          updated_at: session.updated_at.toISOString(),
+          expiration_date: session.expiration_date.toISOString(),
+        },
+      });
 
       return session;
     } catch (err) {
@@ -45,15 +43,13 @@ export class SessionsRepositoryDynamo implements ISessionsRepository {
 
   async find(id: string): Promise<Session | undefined> {
     try {
-      const { Item } = await dynamoDB
-        .get({
-          TableName,
-          Key: {
-            PK: `session`,
-            SK: `session.id:${id}`,
-          },
-        })
-        .promise();
+      const { Item } = await dynamoDB.get({
+        TableName,
+        Key: {
+          PK: `session`,
+          SK: `session.id:${id}`,
+        },
+      });
 
       const session = Item != null ? (Item as Session) : undefined;
 
@@ -65,21 +61,19 @@ export class SessionsRepositoryDynamo implements ISessionsRepository {
 
   async findByUser(user_id: string): Promise<Session[]> {
     try {
-      const { Items } = await dynamoDB
-        .query({
-          TableName,
-          IndexName: "GSI1",
-          KeyConditionExpression: `#P1 = :P1 and begins_with(#P2,:P2) `,
-          ExpressionAttributeNames: {
-            "#P1": `GSI1-PK`,
-            "#P2": `GSI1-SK`,
-          },
-          ExpressionAttributeValues: {
-            ":P1": `user.id:${user_id}`,
-            ":P2": `session`,
-          },
-        })
-        .promise();
+      const { Items } = await dynamoDB.query({
+        TableName,
+        IndexName: "GSI1",
+        KeyConditionExpression: `#P1 = :P1 and begins_with(#P2,:P2) `,
+        ExpressionAttributeNames: {
+          "#P1": `GSI1-PK`,
+          "#P2": `GSI1-SK`,
+        },
+        ExpressionAttributeValues: {
+          ":P1": `user.id:${user_id}`,
+          ":P2": `session`,
+        },
+      });
 
       if (Items == null) {
         return [];
@@ -93,22 +87,20 @@ export class SessionsRepositoryDynamo implements ISessionsRepository {
 
   async updateToken(id: string, new_refresh_token: string): Promise<void> {
     try {
-      await dynamoDB
-        .update({
-          TableName,
-          Key: {
-            PK: `session`,
-            SK: `session.id:${id}`,
-          },
-          UpdateExpression: `set #P1 = :P1`,
-          ExpressionAttributeNames: {
-            "#P1": "refresh_token",
-          },
-          ExpressionAttributeValues: {
-            ":P1": new_refresh_token,
-          },
-        })
-        .promise();
+      await dynamoDB.update({
+        TableName,
+        Key: {
+          PK: `session`,
+          SK: `session.id:${id}`,
+        },
+        UpdateExpression: `set #P1 = :P1`,
+        ExpressionAttributeNames: {
+          "#P1": "refresh_token",
+        },
+        ExpressionAttributeValues: {
+          ":P1": new_refresh_token,
+        },
+      });
     } catch (err) {
       throw err;
     }
@@ -116,15 +108,13 @@ export class SessionsRepositoryDynamo implements ISessionsRepository {
 
   async delete(id: string): Promise<void> {
     try {
-      await dynamoDB
-        .delete({
-          TableName,
-          Key: {
-            PK: `session`,
-            SK: `session.id:${id}`,
-          },
-        })
-        .promise();
+      await dynamoDB.delete({
+        TableName,
+        Key: {
+          PK: `session`,
+          SK: `session.id:${id}`,
+        },
+      });
     } catch (err) {
       throw err;
     }
@@ -150,11 +140,9 @@ export class SessionsRepositoryDynamo implements ISessionsRepository {
       if (delete_operations.length > 0) {
         params.RequestItems[TableName] = [...delete_operations];
 
-        await dynamoDB
-          .batchWrite({
-            ...params,
-          })
-          .promise();
+        await dynamoDB.batchWrite({
+          ...params,
+        });
       }
     } catch (err) {
       throw err;
@@ -187,11 +175,9 @@ export class SessionsRepositoryDynamo implements ISessionsRepository {
       if (delete_operations.length > 0) {
         params.RequestItems[TableName] = [...delete_operations];
 
-        await dynamoDB
-          .batchWrite({
-            ...params,
-          })
-          .promise();
+        await dynamoDB.batchWrite({
+          ...params,
+        });
       }
     } catch (err) {
       throw err;
